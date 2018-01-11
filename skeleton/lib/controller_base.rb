@@ -8,9 +8,10 @@ class ControllerBase
   attr_reader :req, :res, :params
 
   # Setup the controller
-  def initialize(req, res)
+  def initialize(req, res, route_params)
     @req = req
     @res = res
+    @params = route_params
   end
 
   # Helper method to alias @already_built_response
@@ -37,7 +38,7 @@ class ControllerBase
     if already_built_response?
       raise "Double render error!"
     else
-      @res.set_header("Content-Type", content_type)
+      @res['Content-Type'] =  content_type
       @res.write(content)
       @already_built_response = true
       session.store_session(@res)
@@ -62,5 +63,6 @@ class ControllerBase
 
   # use this with the router to call action_name (:index, :show, :create...)
   def invoke_action(name)
+    self.send(name)
   end
 end
